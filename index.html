@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXT AI | TENSES</title>
+    <meta name="description" content="An AI-powered app that provides detailed explanations of any English tense, including definitions, formulas, examples, and Urdu-to-English conversions." />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      /* NEW 3D FIRE ANIMATION */
+      @keyframes fire-glow {
+        0%, 100% {
+          box-shadow: 0 0 10px 2px rgba(220, 38, 38, 0.7), 0 0 25px 8px rgba(249, 115, 22, 0.5), inset 0 0 6px rgba(239, 68, 68, 0.6);
+          transform: scale(1.0) translateY(0);
+        }
+        50% {
+          box-shadow: 0 0 20px 5px rgba(220, 38, 38, 0.9), 0 0 50px 15px rgba(249, 115, 22, 0.7), inset 0 0 10px rgba(239, 68, 68, 0.8);
+          transform: scale(1.05) translateY(-2px);
+        }
+      }
+
+      @keyframes fire-cover-flicker {
+        0%   { opacity: 0.6; transform: scale(1) rotate(0deg); }
+        25%  { opacity: 0.8; transform: scale(1.1) rotate(5deg); }
+        50%  { opacity: 0.5; transform: scale(1.2) rotate(-5deg); }
+        75%  { opacity: 0.9; transform: scale(1.15) rotate(3deg); }
+        100% { opacity: 0.6; transform: scale(1) rotate(0deg); }
+      }
+
+      .is-generating-fire {
+        position: relative;
+        overflow: visible; /* Allow pseudo-elements to be visible outside */
+        animation: fire-glow 2s infinite ease-in-out;
+        will-change: transform, box-shadow;
+        background-color: #c53030; /* A darker red */
+        border-color: #dd6b20; /* A darker orange */
+        color: white;
+      }
+      
+      .is-generating-fire::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background-image: 
+          radial-gradient(circle at 50% 50%, rgba(252, 211, 77, 0.8) 0%, rgba(249, 115, 22, 0.6) 30%, rgba(220, 38, 38, 0.4) 60%, transparent 80%);
+        border-radius: 50%;
+        filter: blur(15px);
+        z-index: 0;
+        animation: fire-cover-flicker 1s infinite linear;
+        will-change: transform, opacity;
+      }
+      
+      /* We need to make sure the button text is visible on top of the fire */
+      .is-generating-fire > * {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              urdu: ['Noto Nastaliq Urdu', 'serif'],
+            },
+            keyframes: {
+              'fade-in-up': {
+                '0%': { opacity: '0', transform: 'translateY(20px) scale(0.95)' },
+                '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+              },
+              'slide-down': {
+                '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              'flip-in': {
+                '0%': { transform: 'rotateY(90deg) scale(0.8)', opacity: '0' },
+                '100%': { transform: 'rotateY(0) scale(1)', opacity: '1' }
+              },
+              'shake': {
+                '10%, 90%': { transform: 'translateX(-1px)' },
+                '20%, 80%': { transform: 'translateX(2px)' },
+                '30%, 50%, 70%': { transform: 'translateX(-4px)' },
+                '40%, 60%': { transform: 'translateX(4px)' }
+              },
+              'pulse-red': {
+                '0%, 100%': { boxShadow: '0 0 0 0 rgba(239, 68, 68, 0.7)' },
+                '70%': { boxShadow: '0 0 0 10px rgba(239, 68, 68, 0)' }
+              },
+               'flicker': {
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '0.6' }
+              },
+            },
+            animation: {
+              'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
+              'slide-down': 'slide-down 0.3s ease-out forwards',
+              'flip-in': 'flip-in 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
+              'shake': 'shake 0.82s cubic-bezier(.36,.07,.19,.97) both',
+              'pulse-red': 'pulse-red 2s infinite',
+              'flicker': 'flicker 1.5s infinite',
+            }
+          },
+        },
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.20.0",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react": "https://aistudiocdn.com/react@^19.1.1"
+  }
+}
+</script>
+</head>
+  <body class="bg-slate-900 font-sans">
+    <div id="root"></div>
+  </body>
+</html>
