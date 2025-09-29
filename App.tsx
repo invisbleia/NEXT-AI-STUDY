@@ -27,6 +27,7 @@ const defaultOptions: GenerationOptions = {
 const ToolsPage = ({ onGoHome }: { onGoHome: () => void }) => {
   const [activeTool, setActiveTool] = useState('tenseExplainer');
   const [isExamPrepOpen, setIsExamPrepOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const tools = [
     { 
@@ -102,12 +103,22 @@ const ToolsPage = ({ onGoHome }: { onGoHome: () => void }) => {
 
   const prefillTense = (tense: string) => {
     setTenseName(tense);
+    if (window.innerWidth < 768) {
+        setIsSidebarOpen(false);
+    }
   }
 
   return (
     <div className="min-h-screen flex text-slate-200">
+      {isSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/60 z-20 md:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+            aria-hidden="true"
+          ></div>
+      )}
       {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0 bg-slate-800/50 backdrop-blur-sm border-r border-slate-700 flex flex-col p-4">
+      <aside className={`fixed md:static inset-y-0 left-0 z-30 w-64 flex-shrink-0 bg-slate-800/50 backdrop-blur-sm border-r border-slate-700 flex flex-col p-4 transform transition-transform duration-300 md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center mb-8">
           <button onClick={onGoHome} className="text-slate-400 hover:text-blue-400 transition-colors p-2 rounded-md hover:bg-slate-700/50" aria-label="Go to Homepage">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -153,7 +164,12 @@ const ToolsPage = ({ onGoHome }: { onGoHome: () => void }) => {
                 return (
                     <button
                         key={tool.id}
-                        onClick={() => !tool.comingSoon && setActiveTool(tool.id)}
+                        onClick={() => {
+                            if (!tool.comingSoon) {
+                                setActiveTool(tool.id);
+                                if (window.innerWidth < 768) setIsSidebarOpen(false);
+                            }
+                        }}
                         disabled={tool.comingSoon}
                         className={`flex items-center p-3 rounded-lg transition-colors text-left text-sm font-medium ${
                             activeTool === tool.id
@@ -213,34 +229,43 @@ const ToolsPage = ({ onGoHome }: { onGoHome: () => void }) => {
       {/* Main Content Area */}
       <div className="flex-grow p-4 sm:p-6 lg:p-8 overflow-y-auto [perspective:2000px]">
         <main className="max-w-4xl mx-auto">
+          <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="md:hidden p-2 mb-4 rounded-md text-slate-400 bg-slate-800/50 border border-slate-700"
+              aria-label="Open menu"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+          </button>
           {activeTool === 'tenseExplainer' && (
             <>
               <header className="text-center my-8 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-                <h1 className="text-4xl sm:text-5xl font-bold text-slate-100">
+                <h1 className="text-3xl sm:text-5xl font-bold text-slate-100">
                   NEXT AI | <span className="text-blue-400">TENSE</span>
                 </h1>
-                <p className="mt-4 text-lg text-slate-400">
+                <p className="mt-4 text-base sm:text-lg text-slate-400">
                   Enter Any Tense Name To Get A Full, Detailed Breakdown.
                 </p>
               </header>
               
-              <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-lg p-6 sticky top-4 z-10 border border-slate-700 transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl [transform-style:preserve-3d] hover:[transform:rotateX(10deg)_translateZ(20px)] animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+              <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-lg p-4 sm:p-6 sticky top-4 z-10 border border-slate-700 transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl [transform-style:preserve-3d] hover:[transform:rotateX(10deg)_translateZ(20px)] animate-fade-in-up" style={{ animationDelay: '200ms' }}>
                 <TenseInputForm
                   onSubmit={handleGenerate}
                   isLoading={isLoading}
                   tenseName={tenseName}
                   onTenseNameChange={setTenseName}
                 />
-                <div className="mt-4 flex justify-between items-center text-sm text-slate-400">
-                  <div>
-                    Try:
-                    <button onClick={() => prefillTense('Present Indefinite Tense')} className="ml-2 font-medium text-blue-400 hover:underline">Present Indefinite</button>,
-                    <button onClick={() => prefillTense('Past Perfect Continuous Tense')} className="ml-2 font-medium text-blue-400 hover:underline">Past Perfect Continuous</button>,
-                    <button onClick={() => prefillTense('Future Perfect Tense')} className="ml-2 font-medium text-blue-400 hover:underline">Future Perfect</button>
+                <div className="mt-4 flex flex-col sm:flex-row sm:justify-between items-start sm:items-center text-sm text-slate-400 space-y-2 sm:space-y-0">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span>Try:</span>
+                    <button onClick={() => prefillTense('Present Indefinite Tense')} className="font-medium text-blue-400 hover:underline">Present Indefinite</button>,
+                    <button onClick={() => prefillTense('Past Perfect Continuous Tense')} className="ml-1 font-medium text-blue-400 hover:underline">Past Perfect</button>,
+                    <button onClick={() => prefillTense('Future Perfect Tense')} className="ml-1 font-medium text-blue-400 hover:underline">Future Perfect</button>
                   </div>
                   <button 
                     onClick={() => setShowAdvanced(!showAdvanced)} 
-                    className="flex items-center font-medium text-blue-400 hover:underline"
+                    className="flex items-center font-medium text-blue-400 hover:underline self-start sm:self-center mt-2 sm:mt-0"
                     aria-expanded={showAdvanced}
                     aria-controls="advanced-options"
                   >
@@ -274,7 +299,7 @@ const ToolsPage = ({ onGoHome }: { onGoHome: () => void }) => {
           )}
 
           {activeTool !== 'tenseExplainer' && (
-             <div className="flex items-center justify-center h-full animate-fade-in-up">
+             <div className="flex items-center justify-center h-full animate-fade-in-up min-h-[60vh]">
               <div className="text-center p-8 bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-lg border border-slate-700">
                 <h2 className="text-3xl font-bold text-slate-100">Coming Soon!</h2>
                 <p className="mt-4 text-slate-400">This tool is under development and will be available shortly.</p>
