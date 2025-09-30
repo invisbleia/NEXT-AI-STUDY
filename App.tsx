@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect } from 'react';
 import TenseInputForm from './components/TenseInputForm';
 import TenseOutputDisplay from './components/TenseOutputDisplay';
@@ -196,7 +195,7 @@ const ToolsPage = ({ onGoHome }: { onGoHome: () => void }) => {
             />
             <div>
               <p className="text-sm font-semibold text-slate-100">Ali Hasnain</p>
-              <p className="text-xs text-blue-400">Developer</p>
+              <p className="text-xs text-blue-400">Owner</p>
             </div>
           </div>
           <div className="bg-slate-700/50 p-2 rounded-lg border border-slate-600 flex items-center gap-3 transition-colors hover:border-slate-500">
@@ -207,7 +206,7 @@ const ToolsPage = ({ onGoHome }: { onGoHome: () => void }) => {
             />
             <div>
               <p className="text-sm font-semibold text-slate-100">Abdul Raheem</p>
-              <p className="text-xs text-slate-400">Bestie</p>
+              <p className="text-xs text-slate-400">Co-Owner</p>
             </div>
           </div>
           <div className="flex justify-center space-x-6 pt-2">

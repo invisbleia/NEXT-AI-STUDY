@@ -13,34 +13,14 @@ const AnimatedBackground: React.FC = () => {
 
     let particlesArray: Particle[];
 
-    const mouse = {
-      x: null as number | null,
-      y: null as number | null,
-      // Make the interaction radius responsive
-      radius: 150,
-    };
-
-    const handleMouseMove = (event: MouseEvent) => {
-      mouse.x = event.clientX;
-      mouse.y = event.clientY;
-    };
-    
-    const handleMouseOut = () => {
-      mouse.x = null;
-      mouse.y = null;
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseout', handleMouseOut);
-
     const setCanvasSize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      mouse.radius = Math.min(canvas.width, canvas.height) / 4;
     };
 
     setCanvasSize();
 
+    // Particle class
     class Particle {
       x: number;
       y: number;
@@ -48,8 +28,6 @@ const AnimatedBackground: React.FC = () => {
       directionY: number;
       size: number;
       color: string;
-      baseX: number;
-      baseY: number;
 
       constructor(x: number, y: number, directionX: number, directionY: number, size: number, color: string) {
         this.x = x;
@@ -58,8 +36,6 @@ const AnimatedBackground: React.FC = () => {
         this.directionY = directionY;
         this.size = size;
         this.color = color;
-        this.baseX = this.x;
-        this.baseY = this.y;
       }
 
       draw() {
@@ -71,49 +47,19 @@ const AnimatedBackground: React.FC = () => {
       }
 
       update() {
-        if (mouse.x !== null && mouse.y !== null) {
-          let dx = mouse.x - this.x;
-          let dy = mouse.y - this.y;
-          let distance = Math.sqrt(dx * dx + dy * dy);
-          
-          if (distance < mouse.radius) {
-            let forceDirectionX = dx / distance;
-            let forceDirectionY = dy / distance;
-            let maxDistance = mouse.radius;
-            let force = (maxDistance - distance) / maxDistance;
-            let directionX = forceDirectionX * force * 1.5;
-            let directionY = forceDirectionY * force * 1.5;
-            this.x -= directionX;
-            this.y -= directionY;
-          } else {
-            if (this.x !== this.baseX) {
-              let dx_return = this.x - this.baseX;
-              this.x -= dx_return / 10;
-            }
-            if (this.y !== this.baseY) {
-              let dy_return = this.y - this.baseY;
-              this.y -= dy_return / 10;
-            }
-          }
-        } else {
-          if (this.x !== this.baseX) {
-            let dx_return = this.x - this.baseX;
-            this.x -= dx_return / 20;
-          }
-          if (this.y !== this.baseY) {
-            let dy_return = this.y - this.baseY;
-            this.y -= dy_return / 20;
-          }
-          if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
-          if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
-          this.x += this.directionX;
-          this.y += this.directionY;
+        if (this.x > canvas.width || this.x < 0) {
+          this.directionX = -this.directionX;
         }
-
+        if (this.y > canvas.height || this.y < 0) {
+          this.directionY = -this.directionY;
+        }
+        this.x += this.directionX;
+        this.y += this.directionY;
         this.draw();
       }
     }
 
+    // Create particle array
     const init = () => {
       particlesArray = [];
       const numberOfParticles = (canvas.height * canvas.width) / 9000;
@@ -123,11 +69,12 @@ const AnimatedBackground: React.FC = () => {
         const y = Math.random() * (window.innerHeight - size * 2) + size * 2;
         const directionX = Math.random() * 0.4 - 0.2;
         const directionY = Math.random() * 0.4 - 0.2;
-        const color = 'rgba(147, 197, 253, 0.8)';
+        const color = 'rgba(147, 197, 253, 0.8)'; // theme's blue-300
         particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
       }
     };
 
+    // Animation loop
     let animationFrameId: number;
     const animate = () => {
       if (!ctx) return;
@@ -140,16 +87,16 @@ const AnimatedBackground: React.FC = () => {
       connect();
     };
     
+    // Connect particles
     const connect = () => {
         if (!ctx) return;
         let opacityValue = 1;
-        const connectDistanceSq = (canvas.width/7) * (canvas.height/7);
         for (let a = 0; a < particlesArray.length; a++) {
             for (let b = a; b < particlesArray.length; b++) {
-                const distanceSq = ((particlesArray[a].x - particlesArray[b].x) ** 2) + ((particlesArray[a].y - particlesArray[b].y) ** 2);
-                if (distanceSq < connectDistanceSq) {
-                    opacityValue = 1 - (distanceSq/20000);
-                    ctx.strokeStyle = `rgba(56, 189, 248, ${opacityValue})`;
+                const distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                if (distance < (canvas.width/7) * (canvas.height/7)) {
+                    opacityValue = 1 - (distance/20000);
+                    ctx.strokeStyle = `rgba(56, 189, 248, ${opacityValue})`; // theme's sky-400
                     ctx.lineWidth = 1;
                     ctx.beginPath();
                     ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
@@ -172,8 +119,6 @@ const AnimatedBackground: React.FC = () => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseout', handleMouseOut);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
