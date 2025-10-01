@@ -48,8 +48,6 @@ const AnimatedBackground: React.FC = () => {
       directionY: number;
       size: number;
       color: string;
-      baseX: number;
-      baseY: number;
 
       constructor(x: number, y: number, directionX: number, directionY: number, size: number, color: string) {
         this.x = x;
@@ -58,8 +56,6 @@ const AnimatedBackground: React.FC = () => {
         this.directionY = directionY;
         this.size = size;
         this.color = color;
-        this.baseX = this.x;
-        this.baseY = this.y;
       }
 
       draw() {
@@ -71,11 +67,18 @@ const AnimatedBackground: React.FC = () => {
       }
 
       update() {
+        if (this.x > canvas.width || this.x < 0) {
+          this.directionX = -this.directionX;
+        }
+        if (this.y > canvas.height || this.y < 0) {
+          this.directionY = -this.directionY;
+        }
+
+        // Mouse interaction
         if (mouse.x !== null && mouse.y !== null) {
           let dx = mouse.x - this.x;
           let dy = mouse.y - this.y;
           let distance = Math.sqrt(dx * dx + dy * dy);
-          
           if (distance < mouse.radius) {
             let forceDirectionX = dx / distance;
             let forceDirectionY = dy / distance;
@@ -85,31 +88,12 @@ const AnimatedBackground: React.FC = () => {
             let directionY = forceDirectionY * force * 1.5;
             this.x -= directionX;
             this.y -= directionY;
-          } else {
-            if (this.x !== this.baseX) {
-              let dx_return = this.x - this.baseX;
-              this.x -= dx_return / 10;
-            }
-            if (this.y !== this.baseY) {
-              let dy_return = this.y - this.baseY;
-              this.y -= dy_return / 10;
-            }
           }
-        } else {
-          if (this.x !== this.baseX) {
-            let dx_return = this.x - this.baseX;
-            this.x -= dx_return / 20;
-          }
-          if (this.y !== this.baseY) {
-            let dy_return = this.y - this.baseY;
-            this.y -= dy_return / 20;
-          }
-          if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
-          if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
-          this.x += this.directionX;
-          this.y += this.directionY;
         }
 
+        // Move particle
+        this.x += this.directionX;
+        this.y += this.directionY;
         this.draw();
       }
     }
@@ -143,12 +127,14 @@ const AnimatedBackground: React.FC = () => {
     const connect = () => {
         if (!ctx) return;
         let opacityValue = 1;
-        const connectDistanceSq = (canvas.width/7) * (canvas.height/7);
+        const connectDistance = Math.min(canvas.width, canvas.height) / 7;
+        const connectDistanceSq = connectDistance * connectDistance;
+
         for (let a = 0; a < particlesArray.length; a++) {
             for (let b = a; b < particlesArray.length; b++) {
                 const distanceSq = ((particlesArray[a].x - particlesArray[b].x) ** 2) + ((particlesArray[a].y - particlesArray[b].y) ** 2);
                 if (distanceSq < connectDistanceSq) {
-                    opacityValue = 1 - (distanceSq/20000);
+                    opacityValue = 1 - (distanceSq / connectDistanceSq);
                     ctx.strokeStyle = `rgba(56, 189, 248, ${opacityValue})`;
                     ctx.lineWidth = 1;
                     ctx.beginPath();
