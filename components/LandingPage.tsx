@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import AnimatedBackground from './AnimatedBackground';
 
@@ -121,7 +122,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToTenseApp }) => {
                           className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-2 border-blue-400 group-hover:border-blue-300 transition-colors"
                           />
                           <h3 className="text-lg font-semibold text-slate-100">Ali Hasnain</h3>
-                          <p className="text-blue-400 font-medium">Owner</p>
+                          <p className="text-blue-400 font-medium">Developer</p>
                       </div>
                   </a>
                   <div className="group rounded-xl transition-all duration-300">
@@ -132,7 +133,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToTenseApp }) => {
                           className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-2 border-slate-500 group-hover:border-slate-400 transition-colors"
                           />
                           <h3 className="text-lg font-semibold text-slate-100">Abdul Raheem</h3>
-                          <p className="text-slate-400 font-medium">CEO</p>
+                          <p className="text-slate-400 font-medium">Bestie</p>
                       </div>
                   </div>
               </div>
