@@ -9,6 +9,7 @@ import AdvancedOptions from './components/AdvancedOptions';
 import { generateTenseExplanation } from './services/geminiService';
 import type { TenseDetails, GenerationOptions } from './types';
 import LandingPage from './components/LandingPage';
+import PracticeQuiz from './components/PracticeQuiz';
 
 const defaultOptions: GenerationOptions = {
   includeDefinition: true,
@@ -49,7 +50,7 @@ const ToolsPage = ({ onGoHome }: { onGoHome: () => void }) => {
       icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>, 
       subItems: [
         { id: 'studyPlan', name: 'Study Plan', comingSoon: true },
-        { id: 'practiceQuiz', name: 'Practice Quiz', comingSoon: true },
+        { id: 'practiceQuiz', name: 'Practice Quiz', comingSoon: false },
         { id: 'summaryGenerator', name: 'Summary Generator', comingSoon: true },
       ]
     },
@@ -150,8 +151,22 @@ const ToolsPage = ({ onGoHome }: { onGoHome: () => void }) => {
                             {tool.subItems.map(subItem => (
                               <button
                                 key={subItem.id}
+                                onClick={() => {
+                                  if (!subItem.comingSoon) {
+                                      setActiveTool(subItem.id);
+                                      if (window.innerWidth < 768) {
+                                        setIsSidebarOpen(false);
+                                      }
+                                  }
+                                }}
                                 disabled={subItem.comingSoon}
-                                className="w-full flex items-center p-2 rounded-lg transition-colors text-left text-sm font-medium cursor-not-allowed text-slate-500"
+                                className={`w-full flex items-center p-2 rounded-lg transition-colors text-left text-sm font-medium ${
+                                  activeTool === subItem.id
+                                    ? 'bg-blue-600/30 text-blue-200'
+                                    : 'text-slate-400 hover:bg-slate-700/50 hover:text-slate-200'
+                                } ${
+                                  subItem.comingSoon ? 'cursor-not-allowed text-slate-500 hover:bg-transparent' : ''
+                                }`}
                               >
                                 <span className="ml-5 flex-grow">{subItem.name}</span>
                                 {subItem.comingSoon && <span className="text-xs bg-slate-600 text-slate-300 px-2 py-0.5 rounded-full">Soon</span>}
@@ -299,7 +314,11 @@ const ToolsPage = ({ onGoHome }: { onGoHome: () => void }) => {
             </>
           )}
 
-          {activeTool !== 'tenseExplainer' && (
+          {activeTool === 'practiceQuiz' && (
+            <PracticeQuiz />
+          )}
+
+          {activeTool !== 'tenseExplainer' && activeTool !== 'practiceQuiz' && (
              <div className="flex items-center justify-center h-full animate-fade-in-up min-h-[60vh]">
               <div className="text-center p-8 bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-lg border border-slate-700">
                 <h2 className="text-3xl font-bold text-slate-100">Coming Soon!</h2>

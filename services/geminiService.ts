@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import type { TenseDetails, GenerationOptions } from '../types';
+import type { TenseDetails, GenerationOptions, QuizQuestion } from '../types';
 
 if (!process.env.API_KEY) {
   throw new Error("API_KEY environment variable is not set");
@@ -145,5 +145,61 @@ export const generateTenseExplanation = async (tenseName: string, options: Gener
     } catch (e) {
         console.error("Failed to parse JSON response:", jsonText);
         throw new Error("The AI returned an invalid response format.");
+    }
+};
+
+export const generatePracticeQuiz = async (topic: string, numQuestions: number, difficulty: string): Promise<QuizQuestion[]> => {
+    const schema = {
+        type: Type.ARRAY,
+        items: {
+            type: Type.OBJECT,
+            properties: {
+                question: { type: Type.STRING, description: "The quiz question." },
+                options: {
+                    type: Type.ARRAY,
+                    description: "An array of 4 possible answers (strings). One of them must be the correct answer.",
+                    items: { type: Type.STRING }
+                },
+                correctAnswer: { type: Type.STRING, description: "The exact string of the correct answer from the 'options' array." },
+                explanation: { type: Type.STRING, description: "A brief explanation (1-2 sentences) of why the correct answer is correct." }
+            },
+            required: ["question", "options", "correctAnswer", "explanation"]
+        }
+    };
+
+    const systemInstruction = `You are an expert quiz generator. Your task is to create a multiple-choice quiz based on a given topic, number of questions, and difficulty level.
+- Generate exactly the requested number of questions.
+- For each question, provide exactly 4 options.
+- Ensure one of the options is the correct answer and that the 'correctAnswer' field matches it exactly.
+- Provide a concise explanation for each correct answer.
+- The difficulty of the questions should match the requested level (${difficulty}).
+- Adhere strictly to the provided JSON schema.`;
+
+    const userPrompt = `Generate a ${numQuestions}-question quiz about "${topic}" with a difficulty level of "${difficulty}".`;
+
+    const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: userPrompt,
+        config: {
+            systemInstruction,
+            responseMimeType: "application/json",
+            responseSchema: schema,
+        }
+    });
+
+    const jsonText = response.text.trim();
+    try {
+        const result = JSON.parse(jsonText) as QuizQuestion[];
+        // Basic validation
+        if (!Array.isArray(result) || result.length === 0) {
+             throw new Error("AI returned an empty or invalid quiz array.");
+        }
+        if(result.some(q => !q.question || !q.options || q.options.length < 2 || !q.correctAnswer || !q.explanation)) {
+            throw new Error("AI returned malformed quiz question objects.");
+        }
+        return result;
+    } catch (e) {
+        console.error("Failed to parse JSON response for quiz:", jsonText, e);
+        throw new Error("The AI returned an invalid response format for the quiz.");
     }
 };

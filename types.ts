@@ -40,3 +40,10 @@ export interface GenerationOptions {
   exampleVocabularyLevel: 'beginner' | 'intermediate' | 'advanced';
   exampleTone: 'formal' | 'informal' | 'neutral';
 }
+
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation: string;
+}
