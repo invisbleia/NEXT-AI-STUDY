@@ -9,6 +9,7 @@ import AdvancedOptions from './components/AdvancedOptions';
 import { generateTenseExplanation } from './services/geminiService';
 import type { TenseDetails, GenerationOptions } from './types';
 import PracticeQuiz from './components/PracticeQuiz';
+import EssayGenerator from './components/EssayGenerator';
 
 const defaultOptions: GenerationOptions = {
   includeDefinition: true,
@@ -30,6 +31,7 @@ const TenseIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w
 const LetterIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>;
 const ExamIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v11.494m-9-5.747h18" /><path d="M4 6h16M4 12h16M4 18h16" /></svg>;
 const StudyIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>;
+const EssayIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>;
 const InstagramIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>;
 const GithubIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>;
 const ChevronDownIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>;
@@ -72,6 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTool, onToolSelect, isOpen, onN
     // FIX: Added 'hasDropdown' property to tool objects to satisfy NavItem component props.
     const tools = [
         { id: 'tenseExplainer', label: 'AI Tense Explainer', icon: <TenseIcon />, isSoon: false, hasDropdown: false },
+        { id: 'essayGenerator', label: 'AI Essay / Mazmon', icon: <EssayIcon />, isSoon: false, hasDropdown: false },
         { id: 'letterGenerator', label: 'AI Letter Generator', icon: <LetterIcon />, isSoon: true, hasDropdown: false },
         { id: 'examPrep', label: 'AI Practice Quiz', icon: <ExamIcon />, isSoon: false, hasDropdown: false },
         { id: 'studyHelper', label: 'AI Study Helper', icon: <StudyIcon />, isSoon: true, hasDropdown: false },
@@ -226,6 +229,8 @@ const App = () => {
                 return <TenseExplainerPage />;
             case 'examPrep':
                 return <PracticeQuiz />;
+            case 'essayGenerator':
+                return <EssayGenerator />;
             default:
                 return (
                     <div className="text-center mt-20">

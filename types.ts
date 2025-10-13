@@ -47,3 +47,11 @@ export interface QuizQuestion {
   correctAnswer: string;
   explanation: string;
 }
+
+export interface EssayGenerationOptions {
+  topic: string;
+  language: 'English' | 'Urdu';
+  length: 'very-short' | 'short' | 'medium' | 'long' | 'extra-long';
+  vocabulary: 'simple' | 'intermediate' | 'advanced';
+  tone: 'formal' | 'informal' | 'academic' | 'creative';
+}

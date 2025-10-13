@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import type { TenseDetails, GenerationOptions, QuizQuestion } from '../types';
+import type { TenseDetails, GenerationOptions, QuizQuestion, EssayGenerationOptions } from '../types';
 
 if (!process.env.API_KEY) {
   throw new Error("API_KEY environment variable is not set");
@@ -202,4 +202,36 @@ export const generatePracticeQuiz = async (topic: string, numQuestions: number, 
         console.error("Failed to parse JSON response for quiz:", jsonText, e);
         throw new Error("The AI returned an invalid response format for the quiz.");
     }
+};
+
+export const generateEssay = async (options: EssayGenerationOptions): Promise<string> => {
+  const { topic, language, length, vocabulary, tone } = options;
+
+  const lengthMapping = {
+    'very-short': 'approximately 100 words',
+    'short': 'approximately 150 words',
+    'medium': 'approximately 200-300 words',
+    'long': 'approximately 500-700 words',
+    'extra-long': 'approximately 1000-1200 words',
+  };
+
+  const systemInstruction = `You are an expert writer and academic assistant. Your task is to write a well-structured and coherent essay (or 'mazmon' in Urdu) on the given topic.
+- Language: You MUST write the entire essay in ${language}.
+- Length: The essay should be ${lengthMapping[length]}.
+- Vocabulary: Use ${vocabulary} level vocabulary.
+- Tone: The tone of the essay should be ${tone}.
+- Structure: Ensure the essay has a clear introduction, body paragraphs, and a conclusion.
+- Formatting: Use paragraphs to structure the essay. If writing in Urdu, ensure the text is correctly formatted for right-to-left display. Do not use Markdown, just plain text with line breaks for paragraphs.`;
+
+  const userPrompt = `Write an essay on the topic: "${topic}".`;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: userPrompt,
+    config: {
+      systemInstruction,
+    }
+  });
+
+  return response.text;
 };
